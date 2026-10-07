@@ -48,6 +48,14 @@ class MegaAgentServerHandler(SimpleHTTPRequestHandler):
             self.wfile.write(json.dumps(status_data, ensure_ascii=False).encode("utf-8"))
             return
         
+        if self.path.startswith("/sw.js"):
+            self.send_response(200)
+            self.send_header("Content-Type", "application/javascript; charset=utf-8")
+            self.send_header("Cache-Control", "no-cache, no-store, must-revalidate")
+            self.end_headers()
+            self.wfile.write(b"self.addEventListener('install', () => self.skipWaiting()); self.addEventListener('activate', () => self.clients.claim());")
+            return
+
         # Default static file serving
         return super().do_GET()
 
@@ -139,11 +147,18 @@ class MegaAgentServerHandler(SimpleHTTPRequestHandler):
         self.send_response(200)
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Cache-Control", "no-cache, no-store, must-revalidate")
         self.end_headers()
         self.wfile.write(json.dumps(data, ensure_ascii=False).encode("utf-8"))
 
-def run_server(port: int = 8080):
-    server_address = ("127.0.0.1", port)
+    def end_headers(self):
+        self.send_header("Cache-Control", "no-cache, no-store, must-revalidate")
+        self.send_header("Pragma", "no-cache")
+        self.send_header("Expires", "0")
+        super().end_headers()
+
+def run_server(port: int = 8888):
+    server_address = ("0.0.0.0", port)
     httpd = HTTPServer(server_address, MegaAgentServerHandler)
     print(f"\n=======================================================")
     print(f"  MEGA-AGENT 10,000 PRODUCTION SERVER ONLINE")
@@ -153,5 +168,5 @@ def run_server(port: int = 8080):
     httpd.serve_forever()
 
 if __name__ == "__main__":
-    port = int(sys.argv[1]) if len(sys.argv) > 1 else 8080
+    port = int(sys.argv[1]) if len(sys.argv) > 1 else 8888
     run_server(port)

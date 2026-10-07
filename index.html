@@ -5,6 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mega-Agent 10,000: Autonomous Urban Intelligence Portal (V1 & V2)</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    // Force clear any stale service workers from other servers
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function(regs) {
+        for (var r of regs) { r.unregister(); }
+      });
+    }
+  </script>
   <style>
     :root {
       --bg-base: #070a12;
