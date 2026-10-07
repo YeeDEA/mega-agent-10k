@@ -6,9 +6,13 @@ Provides convenient imports for the stub modules.
 from .transport import calculate_travel_time
 from .energy import estimate_energy_consumption
 from .urban import compute_population_density
+from .advanced import predict_traffic_congestion, calculate_renewable_share, compute_green_space_per_capita
 
 __all__ = [
     "calculate_travel_time",
     "estimate_energy_consumption",
     "compute_population_density",
+    "predict_traffic_congestion",
+    "calculate_renewable_share",
+    "compute_green_space_per_capita",
 ]
