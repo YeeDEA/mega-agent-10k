@@ -1,0 +1,3 @@
+Repository URL: https://github.com/user1/demo_site_repo (creation failed)
+CI Status: Repository creation failed, no CI workflow set up.
+Please provide a valid GitHub authentication token or ensure gh CLI is authenticated.
