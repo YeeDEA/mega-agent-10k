@@ -1,9 +1,9 @@
 {
   "executive_kpis": {
-    "mean_grid_load_pct": 75.07,
-    "max_grid_load_pct": 79.3,
+    "mean_grid_load_pct": 75.1,
+    "max_grid_load_pct": 80.47,
     "system_resilience_index": 0.503,
-    "traffic_flow_stability": 51.16,
+    "traffic_flow_stability": 50.68,
     "total_agents_monitored": 10000
   },
   "action_items": [
@@ -13,5 +13,5 @@
     "4. [레드팀 방어] 2,500개 변전 노드에 대한 사이버 침투 모의훈련 100% 자가 복구 검증",
     "5. [예산/집행] 도시 전력망 무결성 99.8% 달성으로 불필요한 예비 발전기 가동 비용 월 4.2억 원 절감"
   ],
-  "timestamp": "2026-10-07T18:10:07.973383"
+  "timestamp": "2026-10-07T19:32:18.098679"
 }

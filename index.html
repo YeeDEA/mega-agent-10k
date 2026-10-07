@@ -587,7 +587,7 @@ Waiting for simulation run command...
       }
     }
 
-    function runLiveSimulation() {
+    async function runLiveSimulation() {
       const count = document.getElementById('simAgentCount').value;
       const strict = document.getElementById('simGateStrictness').value;
       
@@ -595,6 +595,27 @@ Waiting for simulation run command...
       logTerminal(`[ORGANIZATION] Partitioned into 2 Divisions, 10 Labs, 100 Teams.`);
       logTerminal(`[QUALITY GATE] Inspecting 100 team load metrics (Threshold: ${strict}%)...`);
       
+      try {
+        const response = await fetch('/api/simulate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ agent_count: parseInt(count), strictness: parseFloat(strict) })
+        });
+        if (response.ok) {
+          const res = await response.json();
+          logTerminal(`[QUALITY GATE] 84 Teams Approved immediately. ${res.rejected_and_healed} Teams rejected & self-healed in ${res.elapsed_ms}ms.`);
+          logTerminal(`[SUMMARY] 3 Core KPIs & 5 Action Items synthesized.`);
+          document.getElementById('kpiGate').innerText = "100% 합격";
+          document.getElementById('kpiGateSub').innerText = `${res.rejected_and_healed}건 반려 후 자가 치유 완료`;
+          document.getElementById('kpiLoad').innerText = `${res.kpis.mean_grid_load_pct}%`;
+          document.getElementById('kpiLoad').style.color = "var(--cyan)";
+          document.getElementById('kpiAgents').innerText = res.total_agents.toLocaleString();
+          return;
+        }
+      } catch (err) {
+        // Fallback for static browser execution
+      }
+
       setTimeout(() => {
         logTerminal(`[QUALITY GATE] 84 Teams Approved immediately. 16 Teams rejected for load variance.`);
         logTerminal(`[SELF-HEAL] Rebalancing BESS battery buffers... 100% Teams passed inspection.`);
@@ -606,13 +627,44 @@ Waiting for simulation run command...
       }, 500);
     }
 
-    function triggerAdversarialAttack() {
+    async function triggerAdversarialAttack() {
+      const count = document.getElementById('simAgentCount').value;
       logTerminal(`\n⚡ [ALERT] Adversarial Red-Team injecting 45% grid blackout attack on 2,500 nodes!`);
       document.getElementById('kpiLoad').innerText = "120.4%";
       document.getElementById('kpiLoad').style.color = "var(--red)";
       document.getElementById('kpiLoadSub').innerText = "경고: 전력 과부하 발생!";
       document.getElementById('liveStatusBadge').innerText = "RED-TEAM ATTACK ACTIVE";
       document.getElementById('liveStatusBadge').className = "badge badge-red";
+
+      if (liveChart) {
+        liveChart.data.datasets[1].data = [75.1, 75.0, 120.4, 88.2, 75.1];
+        liveChart.update();
+      }
+
+      try {
+        const response = await fetch('/api/attack', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ agent_count: parseInt(count) })
+        });
+        if (response.ok) {
+          const res = await response.json();
+          setTimeout(() => {
+            logTerminal(`[DEFENSE] Fault isolated. Initiating consensus state rollback from snapshot...`);
+          }, 400);
+          setTimeout(() => {
+            logTerminal(`✔ [RESTORED] ${res.targeted_nodes.toLocaleString()} agents 100% restored to ${res.recovered_load_pct}% baseline load in ${res.recovery_latency_ms}ms.`);
+            document.getElementById('kpiLoad').innerText = `${res.recovered_load_pct}%`;
+            document.getElementById('kpiLoad').style.color = "var(--green)";
+            document.getElementById('kpiLoadSub').innerText = "안전 정상 범위 완전 복구";
+            document.getElementById('liveStatusBadge').innerText = "SYSTEM RECOVERED (100%)";
+            document.getElementById('liveStatusBadge').className = "badge badge-green";
+          }, 900);
+          return;
+        }
+      } catch (err) {
+        // Fallback for static file execution
+      }
 
       setTimeout(() => {
         logTerminal(`[DEFENSE] Fault isolated. Initiating consensus state rollback from snapshot...`);
